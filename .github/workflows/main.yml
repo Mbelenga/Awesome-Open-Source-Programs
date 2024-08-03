@@ -1,0 +1,52 @@
+name: Welcome team Noah
+
+on:
+    issues:
+        types: [opened]
+    pull_request_target:
+        types: [opened]
+
+jobs:
+    welcome:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Welcome Issue
+              if: github.event_name == 'issues'
+              uses: actions/github-script@v5
+              with:
+                  script: |
+                      const issue = context.issue;
+                      const repo = context.repo;
+                      const issueAuthor = context.payload.sender.login;
+
+                      const welcomeMessage = `
+                        Hi @${issueAuthor}! :wave:
+
+                        Thank you for contributing to our repo, We will give you our feedback.
+                      `;
+
+                      github.rest.issues.createComment({
+                        ...repo,
+                        issue_number: issue.number,
+                        body: welcomeMessage
+                      });
+            - name: Welcome Pull Request
+              if: github.event_name == 'pull_request_target'
+              uses: actions/github-script@v5
+              with:
+                  script: |
+                      const pr = context.issue;
+                      const repo = context.repo;
+                      const prAuthor = context.payload.sender.login;
+
+                      const welcomeMessage = `
+                        Hi @${prAuthor}! :wave:
+
+                        Thank you for your submission.
+                      `;
+
+                      github.rest.issues.createComment({
+                        ...repo,
+                        issue_number: pr.number,
+                        body: welcomeMessage
+                      });
